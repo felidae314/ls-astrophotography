@@ -5,15 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>LS Astrophotography</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
 
 <style>
-/* --- GOOGLE FONTS --- */
-/* Poppins heb je al geladen in <head> */
-/* Voeg Orbitron toe boven je <style>: 
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700&display=swap" rel="stylesheet">
-*/
-
 /* --- GLOBAL RESET --- */
 *{
     margin:0;
@@ -23,6 +17,11 @@
 
 html{
     scroll-behavior:smooth;
+}
+
+@media (prefers-reduced-motion: reduce){
+    html{ scroll-behavior:auto; }
+    *{ transition:none !important; }
 }
 
 /* --- GLOBAL TEXT FONT --- */
@@ -38,6 +37,11 @@ h1, h2, h3{
     font-family:'Orbitron', sans-serif;
     letter-spacing:0.12em;
     text-transform:uppercase;
+}
+
+:focus-visible{
+    outline:2px solid #66b3ff;
+    outline-offset:3px;
 }
 
 /* Header */
@@ -148,6 +152,7 @@ section{
     max-width:1200px;
     margin:auto;
     padding:60px 20px;
+    scroll-margin-top:50px; /* ruimte voor de sticky nav bij ankerlinks */
 }
 
 h2{
@@ -217,6 +222,104 @@ h2{
     border:none;
 }
 
+/* --- GALLERY INTRO: twee grote keuzetegels --- */
+.gallery-intro{
+    color:#cfcfcf;
+    margin-bottom:24px;
+    max-width:60ch;
+}
+
+.category-tiles{
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:22px;
+}
+
+.category-tile{
+    display:block;
+    padding:26px;
+    border-radius:18px;
+    text-decoration:none;
+    color:#f5f5f5;
+    background:rgba(12,12,12,0.95);
+    border:1px solid var(--accent);
+    box-shadow:0 12px 28px rgba(0,0,0,0.7);
+    position:relative;
+    overflow:hidden;
+    transition:transform .3s, background .3s;
+}
+
+.category-tile::before{
+    content:"";
+    position:absolute;
+    inset:0;
+    background:radial-gradient(circle at 100% 0%,var(--accent-glow),transparent 65%);
+    pointer-events:none;
+}
+
+.category-tile:hover{
+    transform:translateY(-4px);
+    background:#151515;
+}
+
+.tile-icon{
+    font-size:2rem;
+    display:block;
+    margin-bottom:8px;
+}
+
+.category-tile h3{
+    font-size:1.2rem;
+    margin-bottom:6px;
+    color:var(--accent);
+}
+
+.category-tile p{
+    color:#cfcfcf;
+    font-size:0.95rem;
+}
+
+.tile-count{
+    display:inline-block;
+    margin-top:14px;
+    padding:3px 12px;
+    border-radius:999px;
+    background:rgba(0,0,0,0.6);
+    border:1px solid var(--accent);
+    font-size:0.8rem;
+}
+
+/* --- KLEURTHEMA PER CATEGORIE --- */
+.theme-solar{
+    --accent:#ffb347;
+    --accent2:#ff6a3d;
+    --accent-glow:rgba(255,140,60,0.28);
+}
+
+.theme-deep{
+    --accent:#66b3ff;
+    --accent2:#9f7bff;
+    --accent-glow:rgba(102,179,255,0.28);
+}
+
+/* --- GALLERY SECTIES (Solar System / Deep Sky) --- */
+.gallery-section{
+    border-top:1px solid #222;
+}
+
+.gallery-section h2{
+    border-bottom:2px solid var(--accent);
+    display:flex;
+    align-items:center;
+    gap:12px;
+}
+
+.gallery-section .section-desc{
+    color:#cfcfcf;
+    margin-bottom:20px;
+    max-width:60ch;
+}
+
 /* Filter menu */
 .filter-bar{
     margin-bottom:20px;
@@ -236,9 +339,15 @@ h2{
     font-family:'Poppins', sans-serif;
 }
 
+.filter-btn:hover{
+    border-color:var(--accent);
+}
+
 .filter-btn.active{
-    border-color:#66b3ff;
-    background:#1a1a1a;
+    border-color:var(--accent);
+    background:linear-gradient(135deg,var(--accent),var(--accent2));
+    color:#050505;
+    font-weight:500;
 }
 
 /* Gallery */
@@ -260,7 +369,7 @@ h2{
 .card:hover{
     transform:translateY(-6px);
     background:#151515;
-    border-color:rgba(102,179,255,0.6);
+    border-color:var(--accent);
 }
 
 .photo{
@@ -361,7 +470,8 @@ footer{
 }
 
 @media(max-width:600px){
-    .gallery{
+    .gallery,
+    .category-tiles{
         grid-template-columns:1fr;
     }
 }
@@ -385,7 +495,8 @@ footer{
 <nav>
     <div class="nav-links">
         <a href="#home" data-i18n="nav_home">Home</a>
-        <a href="#gallery" data-i18n="nav_gallery">Gallery</a>
+        <a href="#solar-system" data-i18n="nav_solar">Solar System</a>
+        <a href="#deep-sky" data-i18n="nav_deepsky">Deep Sky</a>
         <a href="#about" data-i18n="nav_about">About</a>
         <a href="#contact" data-i18n="nav_contact">Contact</a>
     </div>
@@ -447,66 +558,90 @@ footer{
 
 </section>
 
+<!-- GALLERY: keuze tussen de twee categorieën -->
 <section id="gallery">
 
     <h2 data-i18n="gallery_title">
         Gallery
     </h2>
 
-    <div class="filter-bar">
+    <p class="gallery-intro" data-i18n="gallery_intro">
+        Two worlds: objects in our own Solar System, and faraway Deep Sky targets.
+        Pick one to jump straight to it.
+    </p>
 
-        <button
-            class="filter-btn active"
-            data-filter="all"
-            data-i18n="filter_all">
-            All
-        </button>
+    <div class="category-tiles">
 
-        <button
-            class="filter-btn"
-            data-filter="solar"
-            data-i18n="filter_solar">
-            Solar
-        </button>
+        <a href="#solar-system" class="category-tile theme-solar">
+            <span class="tile-icon">🪐</span>
+            <h3 data-i18n="solar_title">Solar System</h3>
+            <p data-i18n="solar_desc">The Sun, the Moon and the planets.</p>
+            <span class="tile-count">
+                <span id="count-solar-system">0</span>
+                <span data-i18n="images_label">images</span>
+            </span>
+        </a>
 
-        <button
-            class="filter-btn"
-            data-filter="lunar"
-            data-i18n="filter_lunar">
-            Lunar
-        </button>
-
-        <button
-            class="filter-btn"
-            data-filter="planetary"
-            data-i18n="filter_planetary">
-            Planetary
-        </button>
-
-        <button
-            class="filter-btn"
-            data-filter="deep-sky"
-            data-i18n="filter_deepsky">
-            Deep Sky
-        </button>
-
-        <button
-            class="filter-btn"
-            data-filter="galaxy"
-            data-i18n="filter_galaxy">
-            Galaxy
-        </button>
-
-        <button
-            class="filter-btn"
-            data-filter="nebulae"
-            data-i18n="filter_nebulae">
-            Nebulae
-        </button>
+        <a href="#deep-sky" class="category-tile theme-deep">
+            <span class="tile-icon">🌌</span>
+            <h3 data-i18n="deepsky_title">Deep Sky</h3>
+            <p data-i18n="deepsky_desc">Galaxies and nebulae, far beyond our Solar System.</p>
+            <span class="tile-count">
+                <span id="count-deep-sky">0</span>
+                <span data-i18n="images_label">images</span>
+            </span>
+        </a>
 
     </div>
 
-    <div class="gallery" id="gallery-container"></div>
+</section>
+
+<!-- SOLAR SYSTEM -->
+<section id="solar-system" class="gallery-section theme-solar">
+
+    <h2>
+        <span aria-hidden="true">🪐</span>
+        <span data-i18n="solar_title">Solar System</span>
+    </h2>
+
+    <p class="section-desc" data-i18n="solar_desc">
+        The Sun, the Moon and the planets.
+    </p>
+
+    <div class="filter-bar" data-target="gallery-solar-system">
+
+        <button class="filter-btn active" data-filter="all" data-i18n="filter_all">All</button>
+        <button class="filter-btn" data-filter="solar" data-i18n="filter_solar">Sun</button>
+        <button class="filter-btn" data-filter="lunar" data-i18n="filter_lunar">Moon</button>
+        <button class="filter-btn" data-filter="planetary" data-i18n="filter_planetary">Planets</button>
+
+    </div>
+
+    <div class="gallery" id="gallery-solar-system"></div>
+
+</section>
+
+<!-- DEEP SKY -->
+<section id="deep-sky" class="gallery-section theme-deep">
+
+    <h2>
+        <span aria-hidden="true">🌌</span>
+        <span data-i18n="deepsky_title">Deep Sky</span>
+    </h2>
+
+    <p class="section-desc" data-i18n="deepsky_desc">
+        Galaxies and nebulae, far beyond our Solar System.
+    </p>
+
+    <div class="filter-bar" data-target="gallery-deep-sky">
+
+        <button class="filter-btn active" data-filter="all" data-i18n="filter_all">All</button>
+        <button class="filter-btn" data-filter="galaxy" data-i18n="filter_galaxy">Galaxies</button>
+        <button class="filter-btn" data-filter="nebulae" data-i18n="filter_nebulae">Nebulae</button>
+
+    </div>
+
+    <div class="gallery" id="gallery-deep-sky"></div>
 
 </section>
 
@@ -601,84 +736,102 @@ footer{
 
 <script>
 
-// --- AUTOMATIC IMAGE LIST ---
-// Vul deze lijst aan met ALLE PNG’s die je hebt geplaatst.
+// --- AFBEELDINGEN ---
+// group    : "solar-system" of "deep-sky" (bepaalt in welke sectie de foto komt)
+// category : filters binnen die sectie
+//            solar-system -> "solar" (zon), "lunar" (maan), "planetary" (planeten)
+//            deep-sky     -> "galaxy", "nebulae"
 
 const imageData = [
 
+    // ---------- DEEP SKY ----------
     {
         src:"images/deep-sky/nebulae/M27_dumbell_nebula.png",
-        category:["deep-sky","nebulae"],
+        group:"deep-sky",
+        category:["nebulae"],
         label:"M27 dumbbell nebula"
     },
 
     {
         src:"images/deep-sky/nebulae/NGC_7000_North_America_Nebula.png",
-        category:["deep-sky","nebulae"],
+        group:"deep-sky",
+        category:["nebulae"],
         label:"NGC 7000 North America Nebula"
     },
 
     {
         src:"images/deep-sky/galaxy/M31_andromeda_galaxy.png",
-        category:["deep-sky","galaxy"],
+        group:"deep-sky",
+        category:["galaxy"],
         label:"M31 andromeda galaxy"
     },
 
     {
         src:"images/deep-sky/galaxy/M33_triangulum_nebula.png",
-        category:["deep-sky","galaxy"],
-        label:"M33 triangulum nebula"
+        group:"deep-sky",
+        category:["galaxy"],
+        label:"M33 triangulum galaxy"
     },
 
+    // ---------- SOLAR SYSTEM ----------
     {
         src:"images/solar-system/solar/sun1.png",
-        category:["solar-system"],
+        group:"solar-system",
+        category:["solar"],
         label:"sun"
     },
 
     {
         src:"images/solar-system/planetary/jupiter_1.png",
-        category:["solar-system"],
+        group:"solar-system",
+        category:["planetary"],
         label:"jupiter"
     },
 
     {
         src:"images/solar-system/planetary/jupiter_2.png",
-        category:["solar-system"],
+        group:"solar-system",
+        category:["planetary"],
         label:"jupiter"
     },
 
     {
         src:"images/solar-system/planetary/saturn_1.png",
-        category:["solar-system"],
+        group:"solar-system",
+        category:["planetary"],
         label:"saturn"
     },
 
     {
         src:"images/solar-system/lunar/moon1.png",
-        category:["solar-system"],
+        group:"solar-system",
+        category:["lunar"],
         label:"moon"
     },
 
     {
         src:"images/solar-system/lunar/moon2.png",
-        category:["solar-system"],
+        group:"solar-system",
+        category:["lunar"],
         label:"moon"
     },
 
     {
         src:"images/solar-system/lunar/moon3.png",
-        category:["solar-system"],
+        group:"solar-system",
+        category:["lunar"],
         label:"moon"
     }
 
 ];
 
-const galleryContainer =
-    document.getElementById("gallery-container");
 
+// --- GALERIJ OPBOUWEN (per groep een eigen raster) ---
+const grids = {
+    "solar-system": document.getElementById("gallery-solar-system"),
+    "deep-sky":     document.getElementById("gallery-deep-sky")
+};
 
-// build gallery
 imageData.forEach(item => {
 
     const card = document.createElement("div");
@@ -699,6 +852,7 @@ imageData.forEach(item => {
             <img
                 src="${item.src}"
                 alt="${item.label}"
+                loading="lazy"
             >
 
             <span class="photo-label">
@@ -713,43 +867,56 @@ imageData.forEach(item => {
 
     `;
 
-    galleryContainer.appendChild(card);
+    grids[item.group].appendChild(card);
 
 });
 
 
-// filter
-const filterButtons =
-    document.querySelectorAll(".filter-btn");
+// aantal foto's in de keuzetegels
+Object.keys(grids).forEach(group => {
 
-filterButtons.forEach(btn => {
+    document.getElementById("count-" + group).textContent =
+        grids[group].children.length;
 
-    btn.addEventListener("click", () => {
+});
 
-        filterButtons.forEach(b =>
-            b.classList.remove("active")
-        );
 
-        btn.classList.add("active");
+// --- FILTERS (elke sectie heeft zijn eigen filterbalk) ---
+document.querySelectorAll(".filter-bar").forEach(bar => {
 
-        const filter =
-            btn.dataset.filter;
+    const grid =
+        document.getElementById(bar.dataset.target);
 
-        const cards =
-            document.querySelectorAll(".card");
+    const buttons =
+        bar.querySelectorAll(".filter-btn");
 
-        cards.forEach(card => {
+    buttons.forEach(btn => {
 
-            const cats =
-                card.dataset.categories.split(",");
+        btn.addEventListener("click", () => {
 
-            card.style.display =
-                (
-                    filter === "all" ||
-                    cats.includes(filter)
-                )
-                ? "block"
-                : "none";
+            buttons.forEach(b =>
+                b.classList.remove("active")
+            );
+
+            btn.classList.add("active");
+
+            const filter =
+                btn.dataset.filter;
+
+            grid.querySelectorAll(".card").forEach(card => {
+
+                const cats =
+                    card.dataset.categories.split(",");
+
+                card.style.display =
+                    (
+                        filter === "all" ||
+                        cats.includes(filter)
+                    )
+                    ? "block"
+                    : "none";
+
+            });
 
         });
 
@@ -758,7 +925,7 @@ filterButtons.forEach(btn => {
 });
 
 
-// modal
+// --- MODAL ---
 const modal =
     document.getElementById("image-modal");
 
@@ -772,26 +939,24 @@ const modalClose =
     document.getElementById("modal-close");
 
 
-galleryContainer.addEventListener("click", e => {
+Object.values(grids).forEach(grid => {
 
-    const photo =
-        e.target.closest(".photo");
+    grid.addEventListener("click", e => {
 
-    if(!photo) return;
+        const photo =
+            e.target.closest(".photo");
 
-    const src =
-        photo.dataset.src;
+        if(!photo) return;
 
-    const label =
-        photo.dataset.label;
+        modalImg.src = photo.dataset.src;
 
-    modalImg.src = src;
+        modalImg.alt = photo.dataset.label;
 
-    modalImg.alt = label;
+        modalCaption.textContent = photo.dataset.label;
 
-    modalCaption.textContent = label;
+        modal.style.display = "flex";
 
-    modal.style.display = "flex";
+    });
 
 });
 
@@ -811,7 +976,16 @@ modal.addEventListener("click", e => {
 });
 
 
-// i18n
+document.addEventListener("keydown", e => {
+
+    if(e.key === "Escape") {
+        modal.style.display = "none";
+    }
+
+});
+
+
+// --- i18n ---
 const translations = {
 
     en: {
@@ -826,7 +1000,9 @@ const translations = {
 
         nav_home:"Home",
 
-        nav_gallery:"Gallery",
+        nav_solar:"Solar System",
+
+        nav_deepsky:"Deep Sky",
 
         nav_about:"About",
 
@@ -849,6 +1025,24 @@ const translations = {
         gallery_title:
             "Gallery",
 
+        gallery_intro:
+            "Two worlds: objects in our own Solar System, and faraway Deep Sky targets. Pick one to jump straight to it.",
+
+        solar_title:
+            "Solar System",
+
+        solar_desc:
+            "The Sun, the Moon and the planets.",
+
+        deepsky_title:
+            "Deep Sky",
+
+        deepsky_desc:
+            "Galaxies and nebulae, far beyond our Solar System.",
+
+        images_label:
+            "images",
+
         about_title:
             "About Me",
 
@@ -868,19 +1062,16 @@ const translations = {
             "All",
 
         filter_solar:
-            "Solar",
+            "Sun",
 
         filter_lunar:
-            "Lunar",
+            "Moon",
 
         filter_planetary:
-            "Planetary",
-
-        filter_deepsky:
-            "Deep Sky",
+            "Planets",
 
         filter_galaxy:
-            "Galaxy",
+            "Galaxies",
 
         filter_nebulae:
             "Nebulae"
@@ -901,8 +1092,11 @@ const translations = {
         nav_home:
             "Home",
 
-        nav_gallery:
-            "Galerij",
+        nav_solar:
+            "Zonnestelsel",
+
+        nav_deepsky:
+            "Deep sky",
 
         nav_about:
             "Over mij",
@@ -927,6 +1121,24 @@ const translations = {
 
         gallery_title:
             "Galerij",
+
+        gallery_intro:
+            "Twee werelden: objecten in ons eigen zonnestelsel en verre deep-sky-objecten. Kies er een om er direct naartoe te gaan.",
+
+        solar_title:
+            "Zonnestelsel",
+
+        solar_desc:
+            "De zon, de maan en de planeten.",
+
+        deepsky_title:
+            "Deep sky",
+
+        deepsky_desc:
+            "Sterrenstelsels en nevels, ver voorbij ons zonnestelsel.",
+
+        images_label:
+            "foto's",
 
         about_title:
             "Over mij",
@@ -954,9 +1166,6 @@ const translations = {
 
         filter_planetary:
             "Planeten",
-
-        filter_deepsky:
-            "Deep sky",
 
         filter_galaxy:
             "Sterrenstelsels",
@@ -987,6 +1196,8 @@ function setLanguage(lang){
             }
 
         });
+
+    document.documentElement.lang = lang;
 
     document
         .querySelectorAll(".lang-btn")
